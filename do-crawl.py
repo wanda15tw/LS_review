@@ -15,10 +15,11 @@ def webscraper(URL):
     for idx in range(len(links)):
         post_url = base_URL + links[idx]
         post_soup = BeautifulSoup(requests.get(post_url).text, 'html5lib')
-        posts.loc[idx, 'Content'] = post_soup('div', 'content-body question-content')[0].text
+        posts.loc[idx, 'Content'] = post_soup('div', 'content-body question-content')[0]
         posts.loc[idx, 'Link'] = post_url
+    posts['Title'] = posts['Title'].str.replace('^\n\s{2,}', '\n<b>').str.replace('\n\s{2,}', '\n</b>')
     return posts
-def filter_by_kw(posts, keywords = ['openlitespeed', 'ols', 'cyberpanel', 'lsws', 'litespeed', \
+def filter_by_kw(posts, keywords = ['openlitespeed', '[^to]ols', 'cyberpanel', 'lsws', 'litespeed', \
                'lightspeed', 'open-lite-speed']):
     kw_str = '|'.join(keywords)
     return posts.loc[posts['Title'].str.contains(kw_str, regex=True, case=False) |\
@@ -27,7 +28,7 @@ def export2csv(filename='DO_forum.csv'):
     filtered_posts.to_csv(filename)
 
 def export2txt(filename='DO_forum.txt'):
-    filtered_posts.to_csv(filename, index=False)
+    filtered_posts.to_csv(filename, index=False, sep='\n', header=False)
 
 def line_prepender(filename='DO_forum.txt', line="Subject: Check DigitalOcean Forum"):
     with open(filename, 'r+') as f:
@@ -39,8 +40,7 @@ if __name__ == "__main__":
     URLs = sys.argv[1:]
     
     if URLs == []:
-        URLs = ["https://www.digitalocean.com/community/questions", \
-                "https://www.digitalocean.com/community/questions?q=openlitespeed"]
+        URLs = ["https://www.digitalocean.com/community/questions"]
     
     print('URLs for scrapping:', URLs)
 
@@ -57,7 +57,10 @@ if __name__ == "__main__":
         # only export to csv and overwrite if there is filtered post 
         export2txt()
         # insert subject line on top of text file
+        line_prepender(line='Content-Type: text/html; charset=US-ASCII')
         line_prepender()
         # make bashcommand
-        bashCommand = "sendmail dotdotpanda@gmail.com < DO_forum.txt"
+        bashCommand = "sendmail xxxx@gmail.com < DO_forum.txt"
         output = subprocess.check_output(['bash','-c', bashCommand])
+    else:
+        print('0 question matchs keywords so do nothing')
