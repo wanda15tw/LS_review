@@ -16,6 +16,7 @@ def webscraper(URL):
         post_url = base_URL + links[idx]
         post_soup = BeautifulSoup(requests.get(post_url).text, 'html5lib')
         posts.loc[idx, 'Content'] = post_soup('div', 'content-body question-content')[0].text
+        posts.loc[idx, 'Link'] = post_url
     return posts
 def filter_by_kw(posts, keywords = ['openlitespeed', 'ols', 'cyberpanel', 'lsws', 'litespeed', \
                'lightspeed', 'open-lite-speed']):
@@ -53,7 +54,7 @@ if __name__ == "__main__":
         t0 = t
 
     if len(filtered_posts) != 0:
-        # only export to txt and overwrite if there is filtered post 
+        # only export to csv and overwrite if there is filtered post 
         export2txt()
         # insert subject line on top of text file
         line_prepender()
