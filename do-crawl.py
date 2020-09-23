@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 import time
 import pandas as pd
+import subprocess
 import re
 import sys
 def webscraper(URL):
@@ -23,6 +24,16 @@ def filter_by_kw(posts, keywords = ['openlitespeed', 'ols', 'cyberpanel', 'lsws'
                            posts['Content'].str.contains(kw_str, regex=True, case=False)]
 def export2csv(filename='DO_forum.csv'):
     filtered_posts.to_csv(filename)
+
+def export2txt(filename='DO_forum.txt'):
+    filtered_posts.to_csv(filename, index=False)
+
+def line_prepender(filename='DO_forum.txt', line="Subject: Check DigitalOcean Forum"):
+    with open(filename, 'r+') as f:
+        content = f.read()
+        f.seek(0, 0)
+        f.write(line.rstrip('\r\n') + '\n' + content)
+
 if __name__ == "__main__":
     URLs = sys.argv[1:]
     
@@ -40,4 +51,12 @@ if __name__ == "__main__":
         t = time.time()
         print(t - t0)
         t0 = t
-    export2csv()
+
+    if len(filtered_posts) != 0:
+        # only export to txt and overwrite if there is filtered post 
+        export2txt()
+        # insert subject line on top of text file
+        line_prepender()
+        # make bashcommand
+        bashCommand = "sendmail dotdotpanda@gmail.com < DO_forum.txt"
+        output = subprocess.check_output(['bash','-c', bashCommand])
