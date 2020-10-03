@@ -17,7 +17,7 @@ def webscraper(URL):
         post_soup = BeautifulSoup(requests.get(post_url).text, 'html5lib')
         posts.loc[idx, 'Content'] = post_soup('div', 'content-body question-content')[0]
         posts.loc[idx, 'Link'] = post_url
-    posts['Title'] = posts['Title'].str.replace('^\n\s{2,}', '\n<b>').str.replace('\n\s{2,}', '\n</b>')
+    posts['Title'] = posts['Title'].map(str).str.replace('^\n\s{2,}', '\n<b>').str.replace('\n\s{2,}', '\n</b>')
     return posts
 def filter_by_kw(posts, keywords = ['openlitespeed', '[^to]ols', 'cyberpanel', 'lsws', 'litespeed', \
                'lightspeed', 'open-lite-speed']):
