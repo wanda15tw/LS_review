@@ -23,7 +23,7 @@ def filter_by_kw(posts, keywords = ['openlitespeed', '[^to]ols', 'cyberpanel', '
                'lightspeed', 'open-lite-speed']):
     kw_str = '|'.join(keywords)
     return posts.loc[posts['Title'].str.contains(kw_str, regex=True, case=False) |\
-                           posts['Content'].str.contains(kw_str, regex=True, case=False)]
+                           posts['Content'].map(str).str.contains(kw_str, regex=True, case=False)]
 def export2csv(filename='DO_forum.csv'):
     filtered_posts.to_csv(filename)
 
