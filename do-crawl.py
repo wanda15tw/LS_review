@@ -19,7 +19,7 @@ def webscraper(URL):
         posts.loc[idx, 'Link'] = post_url
     posts['Title'] = posts['Title'].map(str).str.replace('^\n\s{2,}', '\n<b>').str.replace('\n\s{2,}', '\n</b>')
     return posts
-def filter_by_kw(posts, keywords = ['openlitespeed', '[^to]ols', 'cyberpanel', 'lsws', 'litespeed', \
+def filter_by_kw(posts, keywords = ['openlitespeed', '[^to|^protoc]ols', 'cyberpanel', 'lsws', 'litespeed', \
                'lightspeed', 'open-lite-speed']):
     kw_str = '|'.join(keywords)
     return posts.loc[posts['Title'].str.contains(kw_str, regex=True, case=False) |\
